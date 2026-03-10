@@ -29,8 +29,11 @@ Warning System: Issue official notices to the Admin for any policy violations.
 
 💻 Tech Stack
 Frontend: HTML5, CSS3 (Custom Styles), JavaScript (Fetch API).
-
 Backend: Python (Flask Framework).
+Database: MySQL (Relational Database).
+AI Engine: Scikit-learn (Recommendation System).
+
+//////////////// ScreenShots ////////////////////
 Landing Page or  index page 
 <img width="1918" height="1035" alt="image" src="https://github.com/user-attachments/assets/32338614-7a66-4e43-8abd-8251dbc8c48e" />
 User-Login Page
