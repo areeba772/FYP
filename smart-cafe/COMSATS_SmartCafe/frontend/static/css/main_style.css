@@ -1,0 +1,40 @@
+/* MAIN SITE: Landing page, buttons, global theme */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: #fafafa;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn-primary {
+  background: #e67e22;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 2px solid #e67e22;
+  padding: 10px 18px;
+  border-radius: 6px;
+  background: transparent;
+  color: #e67e22;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #d35400;
+}

@@ -1,0 +1,365 @@
+{% extends "user/layout.html" %}
+
+{% block title %}Menu - Smart Cafe{% endblock %}
+
+{% block styles %}
+<style>
+      :root {
+        --text-gold: var(--brand-yellow);
+        --page-bg: var(--bg-burgundy-dark);
+      }
+      
+      body {
+        /* Override Layout White BG */
+        background: linear-gradient(135deg, var(--bg-burgundy-light) 0%, var(--bg-burgundy-dark) 100%);
+        color: var(--text-light);
+      }
+
+      /* --- 2. MAIN LAYOUT (Sidebar + Grid) --- */
+      .main-container {
+        display: flex;
+        max-width: 1300px;
+        margin: 40px auto;
+        gap: 30px;
+        padding: 0 20px;
+      }
+
+      /* --- SIDEBAR (Categories) --- */
+      .sidebar {
+        flex: 1;
+        max-width: 280px;
+        background: rgba(255, 255, 255, 0.05); /* Glass Effect */
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .sidebar h3 {
+        color: var(--text-gold);
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 10px;
+      }
+
+      .category-list {
+        list-style: none;
+      }
+
+      .category-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ccc;
+        border: 1px solid transparent;
+      }
+
+      .category-item:hover,
+      .category-item.active {
+        background: linear-gradient(45deg, var(--primary), #bf360c);
+        color: white;
+        box-shadow: 0 5px 15px rgba(230, 81, 0, 0.4);
+        transform: translateX(5px);
+        border-color: white;
+      }
+
+      .cat-icon {
+        font-size: 18px;
+        width: 25px;
+        text-align: center;
+      }
+
+      /* --- FOOD GRID --- */
+      .menu-content {
+        flex: 3;
+      }
+
+      .search-bar {
+        width: 100%;
+        padding: 15px 20px;
+        border-radius: 50px;
+        border: 1px solid #444;
+        background: #111;
+        color: white;
+        margin-bottom: 30px;
+        font-size: 16px;
+        outline: none;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
+      .search-bar:focus {
+        border-color: var(--primary);
+      }
+
+      .food-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 25px;
+      }
+
+      /* --- PREMIUM CARD DESIGN --- */
+      .premium-card {
+        background: #1e1e1e;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #333;
+        transition: 0.3s;
+        position: relative;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .premium-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--text-gold);
+        box-shadow: 0 15px 30px rgba(230, 81, 0, 0.2);
+      }
+
+      .card-img-box {
+        height: 180px;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .p-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.5s;
+      }
+      .premium-card:hover .p-card-img {
+        transform: scale(1.1);
+      }
+
+      .p-card-body {
+        padding: 20px;
+        text-align: center;
+      }
+
+      .p-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 5px;
+      }
+
+      .p-desc {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .p-price {
+        font-size: 20px;
+        color: var(--text-gold);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 15px;
+      }
+
+      .btn-premium-add {
+        background: linear-gradient(to right, var(--brand-yellow), var(--brand-yellow-dark));
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(255, 111, 0, 0.4);
+        transition: 0.3s;
+        width: 100%;
+      }
+      .btn-premium-add:hover {
+        background: linear-gradient(to right, var(--brand-yellow-dark), var(--brand-yellow));
+        transform: scale(1.05);
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .main-container {
+          flex-direction: column;
+        }
+        .sidebar {
+          max-width: 100%;
+          position: static;
+          display: flex;
+          overflow-x: auto;
+          gap: 10px;
+          padding: 15px;
+        }
+        .category-item {
+          min-width: 120px;
+          margin: 0;
+        }
+      }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="main-container">
+      <aside class="sidebar">
+        <h3>Categories</h3>
+        <ul class="category-list">
+          <li
+            class="category-item active"
+            onclick="filterCategory('All', this)"
+          >
+            <i class="fas fa-th-large cat-icon"></i> All
+          </li>
+          <li class="category-item" onclick="filterCategory('Fast Food', this)">
+            <i class="fas fa-hamburger cat-icon"></i> Fast Food
+          </li>
+          <li class="category-item" onclick="filterCategory('Desi Food', this)">
+            <i class="fas fa-pepper-hot cat-icon"></i> Desi Food
+          </li>
+          <li class="category-item" onclick="filterCategory('Drinks', this)">
+            <i class="fas fa-cocktail cat-icon"></i> Drinks
+          </li>
+          <li class="category-item" onclick="filterCategory('Dessert', this)">
+            <i class="fas fa-ice-cream cat-icon"></i> Sweets
+          </li>
+        </ul>
+      </aside>
+
+      <section class="menu-content">
+        <input
+          type="text"
+          id="search-input"
+          class="search-bar"
+          placeholder="🔍 Search for your favorite food..."
+          onkeyup="filterMenu()"
+        />
+
+        <div class="food-grid" id="menu-grid">
+          <p>Loading Menu...</p>
+        </div>
+      </section>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      let fullMenu = [];
+
+      window.addEventListener('load', function() {
+        console.log("Loading Menu...");
+        fetchMenu();
+      });
+
+      async function fetchMenu() {
+        const grid = document.getElementById("menu-grid");
+        grid.innerHTML = "<p style='width:100%; text-align:center;'>Loading Menu...</p>";
+
+        try {
+          const response = await fetch("/api/menu");
+          const data = await response.json();
+
+          if (data.success) {
+             fullMenu = data.menu;
+             if(fullMenu.length === 0) {
+                 grid.innerHTML = "<p style='width:100%; text-align:center;'>No menu items found.</p>";
+                 return;
+             }
+             renderMenu(fullMenu);
+          } else {
+             grid.innerHTML = "<p style='color:red; text-align:center;'>Error loading menu.</p>";
+          }
+        } catch (error) {
+          console.error("Menu Error:", error);
+          grid.innerHTML = "<p style='color:red; text-align:center;'>Server unreachable.</p>";
+        }
+      }
+
+      function renderMenu(items) {
+        let grid = document.getElementById("menu-grid");
+        grid.innerHTML = "";
+        
+        if(items.length === 0) {
+             grid.innerHTML = "<p style='width:100%; text-align:center;'>No items match your search.</p>";
+             return;
+        }
+
+        items.forEach((item) => {
+          let linkUrl = `/user/food_detail?name=${encodeURIComponent(item.name)}`;
+          
+          let imgSrc = item.image_url;
+          if (!imgSrc || !imgSrc.startsWith("http")) {
+             if(imgSrc) imgSrc = `../../static/images/${imgSrc}`;
+             else imgSrc = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
+          }
+          
+          let card = `
+                <div class="premium-card">
+                    <div class="card-img-box">
+                        <img src="${imgSrc}" class="p-card-img" onclick="window.location.href='${linkUrl}'" style="cursor:pointer;" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'">
+                    </div>
+                    <div class="p-card-body">
+                        <h4 class="p-title">${item.name}</h4>
+                        <div style="color:#fbc02d; font-size:12px; margin-bottom:5px; cursor: pointer;" onclick="window.location.href='${linkUrl}'">
+                            ${(()=>{
+                                const r = item.rating || 0;
+                                let s = "";
+                                for(let i=1; i<=5; i++) s += i <= Math.round(r) ? "★" : "☆";
+                                return s;
+                            })()} <span style="color:#777;font-size:10px; text-decoration: underline;">(${item.review_count || 0} reviews)</span>
+                        </div>
+                        <p class="p-desc">${item.category}</p>
+                        <span class="p-price">Rs. ${item.price}</span>
+                        <button class="btn-premium-add" onclick="addToCart('${item.name}', ${item.price})">Order Now</button>
+                    </div>
+                </div>`;
+          grid.innerHTML += card;
+        });
+      }
+
+      let currentCategory = "All";
+
+      function filterCategory(category, element) {
+        let items = document.querySelectorAll(".category-item");
+        items.forEach((i) => i.classList.remove("active"));
+        element.classList.add("active");
+        currentCategory = category;
+        applyFilters();
+      }
+
+      function filterMenu() {
+        applyFilters();
+      }
+
+      function applyFilters() {
+        let input = document.getElementById("search-input").value.toUpperCase();
+        
+        let filtered = fullMenu.filter((i) => {
+          let matchesCategory = (currentCategory === "All") || (i.category === currentCategory);
+          let matchesSearch = i.name.toUpperCase().includes(input);
+          return matchesCategory && matchesSearch;
+        });
+        
+        renderMenu(filtered);
+      }
+
+      function addToCart(name, price) {
+        let cart = JSON.parse(localStorage.getItem("mySmartCart")) || [];
+        let found = cart.find((i) => i.name === name);
+        if (found) found.qty++;
+        else cart.push({ name, price, qty: 1 });
+        localStorage.setItem("mySmartCart", JSON.stringify(cart));
+        alert(name + " added!");
+        updateCartCount();
+      }
+    </script>
+{% endblock %}

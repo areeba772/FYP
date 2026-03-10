@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Food Authority Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/authority_style.css') }}" />
+  </head>
+  <style>
+      :root {
+        --primary: #ffb300; /* Corporate Blue replaced with Brand Yellow */
+        --bg-overlay: rgba(59, 0, 13, 0.85); /* Dark Burgundy Overlay */
+        --glass-bg: rgba(255, 255, 255, 0.08); /* Dark Glass Effect */
+        --text-white: #f5f5f5;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-image: url("/static/images/fa.jpeg"); /* Corporate Building BG */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-white);
+      }
+
+      .login-box {
+        background: var(--glass-bg);
+        width: 100%;
+        max-width: 400px;
+        padding: 40px 30px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 5px solid var(--primary);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        text-align: center;
+      }
+
+      .icon-shield {
+        font-size: 40px;
+        color: var(--primary);
+        background: rgba(13, 110, 253, 0.15);
+        width: 70px;
+        height: 70px;
+        line-height: 70px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-bottom: 15px;
+      }
+
+      h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: rgb(14, 1, 1);
+      }
+
+      p.subtitle {
+        color: #2918ab;
+        font-size: 13px;
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 5px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #444;
+        border-radius: 6px;
+        color: rgb(16, 2, 2);
+        font-size: 14px;
+        margin-bottom: 15px;
+        transition: 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+      }
+
+      .btn-send {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
+      }
+
+      .btn-send:hover {
+        background: white;
+        color: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .back-link {
+        display: block;
+        margin-top: 20px;
+        color: #888;
+        font-size: 13px;
+        text-decoration: none;
+        transition: 0.3s;
+      }
+
+      .back-link:hover {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <div class="icon-shield">
+        <i class="fas fa-university"></i>
+      </div>
+      <h2>Food Authority</h2>
+      <p class="subtitle">Official Oversight Portal</p>
+
+      <form onsubmit="authLogin(event)">
+        <label>Email Address</label>
+        <input
+          type="email"
+          id="auth-email"
+          placeholder="officer@authority.gov.pk"
+          required
+        />
+
+        <label>Secure Key</label>
+        <input
+          type="password"
+          id="auth-pass"
+          placeholder="Enter Password"
+          required
+        />
+
+        <button type="submit" class="btn-send">
+          Access Portal
+        </button>
+      </form>
+
+      <a href="/" class="back-link">← Back to Main Page</a>
+    </div>
+
+    <script>
+      async function authLogin(event) {
+        event.preventDefault();
+
+        let email = document.getElementById("auth-email").value.trim();
+        let pass = document.getElementById("auth-pass").value;
+
+        if (!email || !pass) {
+          alert("Please fill all fields!");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/api/authority/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, password: pass })
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            localStorage.setItem("authorityUser", email);
+            localStorage.setItem("authorityName", data.name);
+            alert("✅ Welcome, " + data.name + "!");
+            window.location.href = "/authority/dashboard";
+          } else {
+            alert("⛔ " + (data.message || "Access Denied!"));
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          alert("❌ Server connection failed. Make sure backend is running.");
+        }
+      }
+    </script>
+  </body>
+</html>

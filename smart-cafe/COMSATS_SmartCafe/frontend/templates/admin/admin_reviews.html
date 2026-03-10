@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Customer Reviews - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_style.css') }}" />
+  </head>
+  <body class="dashboard-body">
+    <div class="sidebar">
+      <div>
+        <div class="sidebar-header">Admin Panel</div>
+
+        <div class="sidebar-menu">
+          <a href="/admin/dashboard"><i>📊</i> Dashboard</a>
+          <a href="/admin/order_management"><i>📄</i> Order Management</a>
+          <a href="/admin/menu_management"><i>🍴</i> Menu Management</a>
+          <a href="/admin/user_management"><i>👥</i> User Management</a>
+          <a href="/admin/admin_reviews" class="active"
+            ><i>⭐</i> Customer Reviews</a
+          >
+          <a href="/admin/notifications"><i>🔔</i> Notifications</a>
+          <a href="/admin/table_management"><i>🪑</i> Table Management</a>
+        </div>
+      </div>
+      <a href="#" onclick="confirmLogout(event)" class="logout-btn">↪ Logout</a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">Customer Reviews</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Item Ordered</th>
+              <th>Rating</th>
+              <th>Feedback</th>
+            </tr>
+          </thead>
+          <tbody id="admin-reviews-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      window.onload = loadReviews;
+
+      async function loadReviews() {
+        let tbody = document.getElementById("admin-reviews-body");
+        tbody.innerHTML =
+          "<tr><td colspan='5' style='text-align:center'><i class='fas fa-spinner fa-spin'></i> Loading reviews...</td></tr>";
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/api/authority/reviews");
+          const data = await response.json();
+
+          tbody.innerHTML = "";
+
+          if (!data.success || !data.reviews || data.reviews.length === 0) {
+            tbody.innerHTML =
+              "<tr><td colspan='5' style='text-align:center'>No reviews yet.</td></tr>";
+            return;
+          }
+
+          data.reviews.forEach((r) => {
+            let stars = "⭐".repeat(r.rating || 0);
+            let date = r.created_at
+              ? new Date(r.created_at).toLocaleDateString()
+              : "-";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${date}</td>
+                    <td style="font-weight:bold; text-transform:capitalize;">${r.full_name || "User"}</td>
+                    <td>${r.item_name || "N/A"}</td>
+                    <td style="color:#ffc107; letter-spacing:2px;">${stars}</td>
+                    <td style="font-style:italic;">"${r.comment || "No comment"}"</td>
+                </tr>
+            `;
+          });
+        } catch (e) {
+          console.error("Admin reviews load error:", e);
+          tbody.innerHTML =
+            "<tr><td colspan='5' style='text-align:center; color:red;'>Error loading reviews (Run app.py)</td></tr>";
+        }
+      }
+
+      function confirmLogout(event) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to Logout?")) {
+          window.location.href = "/";
+        }
+      }
+    </script>
+  </body>
+</html>

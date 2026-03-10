@@ -1,0 +1,399 @@
+{% extends "user/layout.html" %}
+
+{% block title %}Food Details - Smart Cafe{% endblock %}
+
+{% block styles %}
+<style>
+      :root {
+        --wood: #5d4037;
+        --paper: #fffdf0;
+      }
+      
+      body {
+         /* Light Fresh Background Override */
+        background: linear-gradient(
+            rgba(59, 0, 13, 0.2),
+            rgba(59, 0, 13, 0.2)
+          ),
+          url("https://img.freepik.com/free-photo/top-view-food-frame-with-copy-space_23-2148723447.jpg?w=1380&t=st=1680000000~exp=1680000000~hmac=xyz");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        color: #333;
+        display: block; /* Layout is usually block, avoid flex body from previous file if it conflicts */
+      }
+
+      /* TABLE SETUP */
+      .table-setup {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 60px;
+        padding: 60px 20px;
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+
+      /* Food Plate */
+      .plate-area {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+      .food-plate {
+        width: 450px;
+        height: 450px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 10px solid white;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transition: transform 0.5s;
+      }
+      .food-plate:hover {
+        transform: scale(1.05) rotate(2deg);
+      }
+
+      /* Clipboard */
+      .clipboard-wrapper {
+        flex: 1;
+        max-width: 450px;
+        position: relative;
+        transform: rotate(-2deg);
+      }
+      .board {
+        background: #3e2723;
+        border-radius: 20px;
+        padding: 15px;
+        box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.4);
+        position: relative;
+      }
+      .metal-clip {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 40px;
+        background: linear-gradient(#bdc3c7, #7f8c8d);
+        border-radius: 5px;
+        z-index: 10;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      .paper {
+        background: #fffdf0;
+        padding: 50px 30px 30px 30px;
+        border-radius: 5px;
+        min-height: 500px;
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        position: relative;
+      }
+      .paper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: repeating-linear-gradient(
+          transparent,
+          transparent 29px,
+          #d1c4e9 30px
+        );
+        pointer-events: none;
+        opacity: 0.3;
+      }
+
+      .handwritten-title {
+        font-family: "Kalam", cursive;
+        font-size: 2.8rem;
+        color: #d35400;
+        margin-bottom: 5px;
+      }
+      .category-stamp {
+        display: inline-block;
+        border: 2px solid #c0392b;
+        color: #c0392b;
+        padding: 5px 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        border-radius: 4px;
+        transform: rotate(-3deg);
+        margin-bottom: 20px;
+        opacity: 0.8;
+      }
+      .paper-desc {
+        font-family: "Kalam", cursive;
+        color: #555;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        line-height: 1.4;
+      }
+      .price-box {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        border-top: 3px double #aaa;
+        border-bottom: 3px double #aaa;
+        padding: 10px 0;
+        margin-bottom: 30px;
+        display: block;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 5;
+      }
+      .qty-box {
+        width: 70px;
+        padding: 10px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        border: 2px solid #333;
+        border-radius: 8px;
+        background: transparent;
+      }
+      .btn-order-now {
+        background: var(--brand-yellow);
+        color: var(--bg-burgundy-dark);
+        border: none;
+        padding: 12px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        transition: 0.2s;
+      }
+      .btn-order-now:hover {
+        background: var(--brand-yellow-dark);
+        transform: scale(1.05);
+      }
+
+      .back-sticker {
+        display: inline-block;
+        background: #ffeb3b;
+        color: #333;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-top: 25px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        transform: rotate(1deg);
+        transition: 0.3s;
+        font-family: "Kalam", cursive;
+        font-size: 1.1rem;
+      }
+      .back-sticker:hover {
+        transform: rotate(0deg) scale(1.1);
+        background: #fff176;
+      }
+
+
+
+      @media (max-width: 900px) {
+        .table-setup {
+          flex-direction: column;
+        }
+        .food-plate {
+          width: 300px;
+          height: 300px;
+        }
+        .clipboard-wrapper {
+          width: 100%;
+        }
+      }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="table-setup">
+      <div class="plate-area">
+        <img src="" id="detail-img" class="food-plate" alt="Food Item" />
+      </div>
+
+      <div class="clipboard-wrapper">
+        <div class="board">
+          <div class="metal-clip"></div>
+          <div class="paper">
+            <span id="detail-cat" class="category-stamp">Category</span>
+            <h1 id="detail-title" class="handwritten-title">Loading...</h1>
+            <p id="detail-desc" class="paper-desc">Checking menu details...</p>
+            <span id="detail-price" class="price-box">Rs. 0</span>
+
+            <div class="controls">
+              <input
+                type="number"
+                id="detail-qty"
+                value="1"
+                min="1"
+                max="10"
+                class="qty-box"
+              />
+              <button class="btn-order-now" onclick="addCurrentItemToCart()">
+                ORDER NOW
+              </button>
+            </div>
+
+            <a href="/user/menu" class="back-sticker">
+              <i class="fas fa-arrow-left"></i> Back to Menu
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM REVIEWS SECTION -->
+    <div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+      <h2 style="font-family: 'Playfair Display', serif; color: #333; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Customer Reviews</h2>
+      <div id="item-reviews-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        <p style="color: #666; font-style: italic;">Loading reviews...</p>
+      </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlName = urlParams.get("name");
+      let currentItemName = "";
+      let currentItemPrice = 0;
+      let currentItemId = 0;
+
+      window.addEventListener('load', function() {
+        loadItemDetails();
+      });
+
+      async function loadItemDetails() {
+        if (!urlName) {
+          alert("No item selected!");
+          window.location.href = "/user/menu";
+          return;
+        }
+
+        try {
+            // Fetch from Server DB
+            const response = await fetch("/api/menu?t=" + new Date().getTime());
+            const data = await response.json();
+            
+            if (data.success) {
+                const targetName = decodeURIComponent(urlName).trim().toLowerCase();
+                // Find item loosely to avoid case issues
+                const item = data.menu.find((i) => i.name.trim().toLowerCase() === targetName);
+
+                if (item) {
+                    document.getElementById("detail-title").innerText = item.name;
+                    document.getElementById("detail-price").innerText = "Rs. " + item.price;
+                    document.getElementById("detail-cat").innerText = item.category;
+
+                    let desc = item.description ? item.description : "Freshly prepared. Enjoy the taste!";
+                    document.getElementById("detail-desc").innerText = desc;
+
+                    // Image Handling
+                    let imgSrc = item.image_url;
+                    if (imgSrc && !imgSrc.startsWith("http")) {
+                         imgSrc = "/static/images/" + imgSrc;
+                    }
+                    else if (!imgSrc) {
+                         imgSrc = "../../static/images/default.jpg";
+                    }
+                    document.getElementById("detail-img").src = imgSrc;
+
+                    currentItemName = item.name;
+                    currentItemPrice = item.price;
+                    currentItemId = item.item_id;
+
+                    // Load generic reviews for this item
+                    loadItemReviews(item.name);
+
+                } else {
+                    alert("Item not found in Database!");
+                    window.location.href = "/user/menu";
+                }
+            } else {
+                alert("Failed to load menu data.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error connecting to server.");
+        }
+      }
+
+      function addCurrentItemToCart() {
+        let qtyInput = document.getElementById("detail-qty");
+        let qty = parseInt(qtyInput.value);
+        if (isNaN(qty) || qty < 1) {
+          alert("Min qty is 1");
+          return;
+        }
+
+        let cart = JSON.parse(localStorage.getItem("mySmartCart")) || [];
+        let found = cart.find((i) => i.name === currentItemName);
+
+        if (found) found.qty += qty;
+        else
+          cart.push({
+            name: currentItemName,
+            price: currentItemPrice,
+            qty: qty,
+          });
+
+        localStorage.setItem("mySmartCart", JSON.stringify(cart));
+        alert(currentItemName + " added!");
+        updateCartCount();
+      }
+
+      async function loadItemReviews(itemName) {
+        const container = document.getElementById("item-reviews-container");
+        try {
+            const res = await fetch("/api/reviews");
+            const data = await res.json();
+            
+            if (data.success) {
+                // Filter reviews for this specific item
+                const itemReviews = data.reviews.filter(r => 
+                    r.item_name && r.item_name.trim().toLowerCase() === itemName.trim().toLowerCase()
+                );
+
+                if (itemReviews.length === 0) {
+                    container.innerHTML = '<p style="color: #888; grid-column: 1/-1;">No reviews yet for this item.</p>';
+                    return;
+                }
+                
+                container.innerHTML = "";
+                itemReviews.forEach(r => {
+                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    
+                    const card = `
+                        <div style="background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee;">
+                            <div style="font-weight: bold; color: var(--primary); font-size: 1.1rem; margin-bottom: 5px;">${r.full_name || "Guest"}</div>
+                            <div style="color: #fbc02d; font-size: 1rem; margin-bottom: 10px;">${stars}</div>
+                            <p style="color: #555; font-style: italic; line-height: 1.5; margin: 0;">"${r.comment}"</p>
+                            <small style="color: #999; display: block; margin-top: 10px;">${r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}</small>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            } else {
+                 container.innerHTML = '<p style="color: red; grid-column: 1/-1;">Could not load reviews.</p>';
+            }
+        } catch(error) {
+            console.error("Error loading reviews:", error);
+            container.innerHTML = '<p style="color: red; grid-column: 1/-1;">Failed to load reviews.</p>';
+        }
+      }
+
+
+
+    </script>
+{% endblock %}

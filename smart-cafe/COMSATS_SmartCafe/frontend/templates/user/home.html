@@ -1,0 +1,487 @@
+{% extends "user/layout.html" %}
+
+{% block title %}Home - Smart Cafe{% endblock %}
+
+{% block styles %}
+<style>
+      /* --- HERO SECTION --- */
+      .hero-section {
+        background: url("https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?q=80&w=1920&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        min-height: 550px;
+        position: relative;
+        text-align: center;
+        color: white;
+        padding-top: 60px;
+        border-bottom-left-radius: 50% 100px;
+        border-bottom-right-radius: 50% 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 1;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+      }
+      .hero-bowl-img {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        margin-bottom: 20px;
+        animation: float 6s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      .script-text {
+        font-family: "Great Vibes", cursive;
+        color: var(--primary);
+        font-size: 3rem;
+        margin-bottom: -10px;
+        display: block;
+      }
+      .main-heading {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5rem;
+        color: white;
+        text-transform: capitalize;
+        margin-bottom: 10px;
+        line-height: 1.2;
+      }
+
+      /* --- SLIDER & CARDS --- */
+      .slider-container {
+        position: relative;
+        z-index: 10;
+        margin-top: -80px;
+        padding: 0 20px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .slider-wrapper {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding: 20px 10px;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        justify-content: flex-start; /* Ensure items start from left */
+      }
+      .slider-wrapper::-webkit-scrollbar {
+        display: none;
+      }
+
+      .food-card {
+        background: rgb(84, 13, 23);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(223, 98, 98, 0.1);
+        overflow: hidden;
+        transition: 0.3s;
+        min-width: 280px;
+        width: 100%;
+      }
+      .food-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .card-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+      .card-body {
+        padding: 15px;
+        text-align: left;
+      }
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #efe6e6;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #efe7e7;
+      }
+      .btn-order {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+      }
+
+      /* --- REGULAR MENU GRID --- */
+      .menu-section {
+        padding: 50px 20px;
+        text-align: center;
+      }
+      .section-title {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: 700;
+      }
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(280px, 1fr)
+        ); /* Responsive Grid */
+        gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+
+
+      /* REVIEWS SECTION */
+      .reviews-section {
+        padding: 50px 20px;
+        background: #eeeded;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .review-grid {
+        display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        padding: 20px 0;
+        scroll-behavior: smooth;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .review-grid::-webkit-scrollbar {
+        display: none;
+      }
+      .home-review-card {
+        min-width: 300px;
+        background: #4d1111;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 5px 15px #cabcbc0d;
+        text-align: left;
+        border: 1px solid #f4e6e6;
+      }
+     .hr-user {
+  font-weight: bold;
+  color: #ffffff !important; /* !important lagane se yeh color laazmi apply hoga */
+  font-size: 1.1rem;
+}
+      .hr-stars {
+        color: #fbc02d;
+        font-size: 0.9rem;
+        margin: 5px 0;
+      }
+      .hr-text {
+        color: #f3e7e7;
+        font-size: 0.95rem;
+        font-style: italic;
+        line-height: 1.5;
+        max-height: 80px;
+        overflow: hidden;
+      }
+      .hr-item {
+        font-size: 0.8rem;
+        color: #f8f3f3;
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <img
+          src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop"
+          class="hero-bowl-img"
+        />
+        <span class="script-text">Delicious Food</span>
+        <h1 class="main-heading">Tasty and Healthy</h1>
+        <p style="color: #ddd">Fresh from our kitchen to your table.</p>
+      </div>
+    </div>
+
+    <!-- DUAL RECOMMENDATIONS SECTION -->
+    <div class="menu-section" id="recommendations-section" style="margin-top: -30px; display: none;">
+      <div style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap;">
+        
+        <!-- Left: Past Favorites -->
+        <div style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);" id="past-favorites-container">
+          <h2 style="font-family: 'Playfair Display', serif; color: #3b000d; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Your High-Rated Favorites</h2>
+          <div id="past-favorites-grid" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+            <!-- Past favorites items injected here -->
+          </div>
+        </div>
+
+        <!-- Vertical Divider (Hidden on mobile via flex-wrap) -->
+        <div style="width: 2px; background: #eee; margin: 20px 0;"></div>
+
+        <!-- Right: AI Recommendations -->
+        <div style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);" id="ai-recommendations-container">
+          <h2 style="font-family: 'Playfair Display', serif; color: #3b000d; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">AI Recommended For You</h2>
+          <div id="ai-recommendations-grid" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+            <div style="text-align: center; padding: 20px; color: #999;"><i class="fas fa-spinner fa-spin fa-2x"></i><br/>Analyzing flavors...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="menu-section">
+      <h2 class="section-title">Fresh From Kitchen</h2>
+      <div class="menu-grid" id="regular-menu">
+        <div
+          style="
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            grid-column: 1/-1;
+          "
+        >
+          <i class="fas fa-spinner fa-spin fa-2x"></i><br />Loading Menu...
+        </div>
+      </div>
+
+      <div style="margin-top: 40px">
+        <a
+          href="/user/menu"
+          style="
+            background: #333;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+          "
+          >View Full Menu</a
+        >
+      </div>
+    </div>
+
+    <!-- CUSTOMER REVIEWS -->
+    <div class="reviews-section">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <div class="review-grid" id="home-reviews">
+            <p style="width: 100%; text-align: center; color: #888;">Loading reviews...</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      // Load Data
+      fetchAIRecommendations();
+      fetchRegularMenu();
+      fetchHomeReviews();
+
+      function scrollLeftSlider(sliderId) { }
+      function scrollRightSlider(sliderId) { }
+
+      // 1. AI RECOMMENDATIONS & PAST FAVORITES
+      async function fetchAIRecommendations() {
+        const recSection = document.getElementById("recommendations-section");
+        const aiGrid = document.getElementById("ai-recommendations-grid");
+        const pastGrid = document.getElementById("past-favorites-grid");
+        const pastContainer = document.getElementById("past-favorites-container");
+        
+        const userEmail = localStorage.getItem("currentUser");
+
+        try {
+          const response = await fetch(
+            "/api/recommendations",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: userEmail }),
+            }
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            recSection.style.display = "block"; // Show section
+
+            // Populate AI Recommendations
+            const menuItems = data.recommendations;
+            aiGrid.innerHTML = "";
+            if (menuItems.length === 0) {
+              aiGrid.innerHTML = "<p style='color:#777; text-align:center;'>No recommendations yet.</p>";
+            } else {
+              menuItems.slice(0, 3).forEach((item) => { // Show top 3 max to fit layout
+                aiGrid.innerHTML += createCard(item);
+              });
+            }
+
+            // Populate Past Favorites (Filter for rated over 3.0)
+            if (data.past_orders && data.past_orders.length > 0) {
+              const goodPastOrders = data.past_orders.filter(o => o.rating >= 4.0 || o.rating === 3.0);
+              pastContainer.style.display = "block";
+              pastGrid.innerHTML = "";
+              if(goodPastOrders.length > 0) {
+                  goodPastOrders.slice(0, 3).forEach((item) => {
+                    pastGrid.innerHTML += createCard(item);
+                  });
+              } else {
+                  pastGrid.innerHTML = "<p style='color:#777; text-align:center;'>Order more items to see your top picks!</p>";
+              }
+            } else {
+              pastGrid.innerHTML = "<p style='color:#777; text-align:center;'>You haven't ordered yet. Your favorites will appear here!</p>";
+            }
+          }
+        } catch (error) {
+          console.error("AI Error:", error);
+          if (aiGrid) aiGrid.innerHTML = "<div style='color:red; text-align:center;'>Error loading suggestions.</div>";
+        }
+      }
+
+      // 2. REGULAR MENU
+      async function fetchRegularMenu() {
+        const grid = document.getElementById("regular-menu");
+        try {
+          const response = await fetch("/api/menu");
+          const data = await response.json();
+
+          if (data.success) {
+            grid.innerHTML = "";
+            const topItems = data.menu.slice(0, 8);
+            if (topItems.length === 0) {
+              grid.innerHTML = "<p>No items in database.</p>";
+              return;
+            }
+            topItems.forEach((item) => {
+              grid.innerHTML += createCard(item);
+            });
+          }
+        } catch (error) {
+          console.error("Menu Error:", error);
+          grid.innerHTML =
+            "<p style='grid-column: 1/-1; color:red;'>Server is not running. Please start app.py</p>";
+        }
+      }
+
+      function createCard(item) {
+        let imgSrc = item.image_url;
+        if (!imgSrc || !imgSrc.startsWith("http")) {
+          // Pointing to Frontend Static Images
+             if(imgSrc) imgSrc = `../../static/images/${imgSrc}`;
+             else imgSrc = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
+        }
+        const defaultImg =
+          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
+
+        const rating = item.rating || 0; // Default to 0 if no rating
+        let starsHtml = "";
+        for(let i=1; i<=5; i++) {
+             starsHtml += i <= Math.round(rating) ? "★" : "☆";
+        }
+        
+        const linkUrl = `/user/food_detail?name=${encodeURIComponent(item.name)}`;
+
+        return `
+            <div class="food-card" style="display: flex; flex-direction: row; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0;">
+                <img src="${imgSrc}" class="card-img" style="width: 100px; height: 100px; border-radius: 10px; margin: 10px; cursor: pointer;" onerror="this.src='${defaultImg}'" onclick="window.location.href='${linkUrl}'">
+                <div class="card-body" style="flex: 1; padding: 10px;">
+                    <h4 class="card-title" style="cursor: pointer; font-size: 16px;" onclick="window.location.href='${linkUrl}'">${item.name}</h4>
+                    <div style="color:#fbc02d; font-size:14px; margin-bottom:5px; cursor: pointer;" onclick="window.location.href='${linkUrl}'">
+                        ${starsHtml} <span style="color:#999;font-size:12px; text-decoration: underline;">(${item.review_count || 0} reviews)</span>
+                    </div>
+                    <div class="card-footer" style="margin-top: 5px;">
+                        <span class="price" style="font-size: 15px;">Rs. ${item.price}</span>
+                        <button class="btn-order" style="padding: 5px 10px; font-size: 11px;" onclick="addToCart('${item.name}', ${item.price})">Add</button>
+                    </div>
+                </div>
+            </div>`;
+      }
+
+      // 3. REVIEWS
+      async function fetchHomeReviews() {
+        const container = document.getElementById("home-reviews");
+        try {
+            const res = await fetch("/api/reviews");
+            const data = await res.json();
+            
+            if (data.success) {
+                if (data.reviews.length === 0) {
+                    container.innerHTML = '<p style="width: 100%; text-align: center; color: #888;">No reviews yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = "";
+                data.reviews.forEach(r => {
+                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    const itemName = r.item_name ? `Ordered: ${r.item_name}` : "General Review";
+                    
+                    const itemLink = r.item_name ? `onclick="window.location.href='/user/food_detail?name=${encodeURIComponent(r.item_name)}'"` : "";
+                    const cursorStyle = r.item_name ? "cursor: pointer;" : "";
+
+                    const card = `
+                        <div class="home-review-card" ${itemLink} style="${cursorStyle} transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div class="hr-user" style="color: #333;">${r.full_name || "Guest"}</div>
+                            <div class="hr-stars">${stars}</div>
+                            <p class="hr-text">"${r.comment}"</p>
+                            <div class="hr-item" style="color: var(--primary); font-weight: bold;">${itemName}</div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            }
+        } catch(error) {
+            console.error(error);
+            container.innerHTML = '<p style="width: 100%; text-align: center; color: red;">Failed to load reviews.</p>';
+        }
+      }
+
+      function addToCart(name, price) {
+        let cart = JSON.parse(localStorage.getItem("mySmartCart")) || [];
+        let found = cart.find((i) => i.name === name);
+        if (found) found.qty++;
+        else cart.push({ name, price, qty: 1 });
+
+        localStorage.setItem("mySmartCart", JSON.stringify(cart));
+        alert(name + " added to cart!");
+        updateCartCount();
+      }
+    </script>
+{% endblock %}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Replies - Food Authority</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/authority_style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <div>
+        <div class="sidebar-header">Food Authority</div>
+        <div class="sidebar-menu">
+          <a href="/authority/dashboard"><i>📊</i> Dashboard</a>
+          <a href="/authority/view_reviews"><i>👁</i> View User Reviews</a>
+          <a href="/authority/check_prices"><i>💲</i> Check Prices</a>
+          <a href="/authority/send_notification"><i>🚀</i> Send Notification</a>
+          <a href="/authority/view_notifications" class="active"
+            ><i>🔔</i> Admin Replies</a
+          >
+        </div>
+      </div>
+      <a href="#" onclick="confirmLogout(event)" class="logout-btn">↪ Logout</a>
+    </div>
+
+    <div class="main-content">
+      <h2 class="page-title">Admin Replies to Your Warnings</h2>
+
+      <div class="card-box">
+        <div class="card-header">Latest Warnings & Replies</div>
+        <div id="warnings-list"></div>
+      </div>
+    </div>
+
+    <script>
+      window.onload = loadWarnings;
+
+      async function loadWarnings() {
+        const container = document.getElementById("warnings-list");
+        container.innerHTML =
+          "<p style='text-align:center; color:#ccc;'>Loading...</p>";
+
+        const email = localStorage.getItem("currentAuthority");
+        if (!email) {
+          container.innerHTML =
+            "<p style='text-align:center; color:#f88;'>Please login as Authority to see replies.</p>";
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            "http://127.0.0.1:5000/api/authority/warnings?email=" +
+              encodeURIComponent(email)
+          );
+          const data = await res.json();
+
+          if (!data.success || !data.warnings || data.warnings.length === 0) {
+            container.innerHTML =
+              "<p style='text-align:center; color:#ccc;'>No warnings or replies yet.</p>";
+            return;
+          }
+
+          container.innerHTML = "";
+          data.warnings.forEach((w) => {
+            const date = w.created_at
+              ? new Date(w.created_at).toLocaleString()
+              : "-";
+            const replyHtml = w.admin_reply
+              ? `<p style="margin-top:8px; padding:10px; border-radius:6px; background:#222; color:#ffd700;">
+                    <strong>Admin Reply:</strong> ${w.admin_reply}
+                 </p>`
+              : `<p style="margin-top:8px; color:#ffb3b3;"><strong>No reply from admin yet.</strong></p>`;
+
+            container.innerHTML += `
+              <div style="background:#111; border-left:4px solid #ffc107; padding:15px; margin-bottom:12px; border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="color:#ffc107;">⚠️ ${w.warning_type ||
+                    "Warning"}</strong>
+                  <small style="color:#aaa;">${date}</small>
+                </div>
+                <p style="margin-top:8px; color:#eee;">${w.warning_message}</p>
+                ${replyHtml}
+              </div>
+            `;
+          });
+        } catch (e) {
+          console.error("Authority warnings load error:", e);
+          container.innerHTML =
+            "<p style='text-align:center; color:red;'>Error loading replies (Run app.py)</p>";
+        }
+      }
+
+      function confirmLogout(event) {
+        event.preventDefault();
+        if (confirm("Logout from Authority Portal?")) {
+          window.location.href = "/";
+        }
+      }
+    </script>
+  </body>
+</html>
+
